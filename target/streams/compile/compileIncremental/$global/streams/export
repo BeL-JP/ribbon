@@ -1,0 +1,1 @@
+scalac -bootclasspath /home/takuya/.sbt/boot/scala-2.12.6/lib/scala-library.jar -classpath /home/takuya/ドキュメント/ribbon/target/scala-2.12/classes /home/takuya/ドキュメント/ribbon/src/main/scala/Ribbon.scala
