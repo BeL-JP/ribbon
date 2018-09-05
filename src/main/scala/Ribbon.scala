@@ -7,26 +7,29 @@ object Ribbon {
 
   def main(args: Array[String]): Unit = {
     println("Ribbon ver 0.1.0")
-    (for{
-      a <- validateArg(args)
-      err <- argParser(a)
-    } yield err) match {
-      case Left(x) => {
+    Config.load match {
+      case Left (x) =>
         println(x)
-        showHelp
-      }
-      case Right(_) => {
-        Config.load
-      }
+      case Right(_) =>
+        (for{
+          a <- validateArg(args)
+          err <- argParser(a)
+        } yield err) match {
+          case Left(x) =>
+            println(x)
+            showHelp
+          case Right(_) =>{
+
+          }
+        }
     }
   }
 
   private def validateArg(args: Array[String]): Either[String,Array[String]] = {
     if (args.length == 0)
-      return Left("Command invalid.")
-    else {
-      return Right(args)
-    }
+      Left("Command invalid.")
+    else
+      Right(args)
   }
 
   private def argParser(args: Array[String]): Either[String,Unit] = {
@@ -34,6 +37,7 @@ object Ribbon {
       case "snapshot" | "-s" => Right()
       case "restore" | "-r" => Right()
       case "help" | "-h" => Right(showHelp)
+      case "daemon_run" => Right()
       case x => Left(s"Command invalid: $x")
     }
   }
@@ -41,11 +45,11 @@ object Ribbon {
   private def showHelp: Unit = {
     using(new BufferedReader(new InputStreamReader(
       getClass.getClassLoader.getResourceAsStream("help.txt")))) {
-      lines => lines foreach println
+      lines => lines.foreach(println)
     }
   }
 
-  def using[A](br: BufferedReader)(body: Iterator[String] => A): A = {
+  private def using[A](br: BufferedReader)(body: Iterator[String] => A): A = {
     try {
       body(Iterator.continually(br.readLine).takeWhile(_ != null))
     } finally {
